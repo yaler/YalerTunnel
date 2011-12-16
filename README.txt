@@ -1,6 +1,6 @@
 YalerTunnel - generic tunneling via the Yaler relay infrastructure
 
-Copyright (c) 2010, Oberon microsystems AG, Switzerland. All rights reserved.
+Copyright (c) 2011, Yaler GmbH, Switzerland. All rights reserved.
 
 YalerTunnel makes any service (e.g. a Web server or a SSH daemon) accessible
 from the Internet, no matter if the service is behind a firewall, a NAT, or a
@@ -12,47 +12,66 @@ supports HTTP proxies (e.g. PuTTY), or uses a second instance of YalerTunnel
 started in client mode to access the tunneled service.
 
 
-To build and run the program, first make sure that you have JDK6 installed and
-that your PATH environment variable includes the JDK's bin directory. Then type:
+To build the program make sure that you have JDK6 (or later) installed and that
+your PATH environment variable includes the JDK's bin directory. Then type:
 
     javac YalerTunnel.java
 
 
-The following examples assume that the Yaler relay infrastructure is running on
-http://yaler.net/
+Then create a free Yaler account at http://yaler.net/ to get a unique relay
+domain for the Yaler instance hosted at try.yaler.net.
 
 
 Example 1) Running a Web server behind a firewall
 
 Start a Web server listening on port 80 and YalerTunnel in server mode:
 
-    java YalerTunnel server localhost:80 yaler.net:80 my-device
+    java YalerTunnel server localhost:80 try.yaler.net:80 <relay domain>
+
+E.g., for the relay domain gsiot-ffmq-ttd5 type
+
+    java YalerTunnel server localhost:80 try.yaler.net:80 gsiot-ffmq-ttd5
 
 On the client, open a Web browser and access
 
-    http://yaler.net/my-device
+    http://try.yaler.net/<relay domain>
+
+In our example, this would be
+
+    http://try.yaler.net/gsiot-ffmq-ttd5
 
 
 Example 2) Tunneling SSH
 
 Start a SSH daemon listening on port 22 and YalerTunnel in proxy mode:
 
-    java YalerTunnel proxy localhost:22 yaler.net:80 my-device-ssh
+    java YalerTunnel proxy localhost:22 try.yaler.net:80 <relay domain>
+
+E.g., for the relay domain gsiot-ffmq-ttd5 type
+
+    java YalerTunnel proxy localhost:22 try.yaler.net:80 gsiot-ffmq-ttd5
+
 
 If your SSH client supports HTTP proxies, configure it to connect via
 
-    http://yaler.net/my-device-ssh
+    http://try.yaler.net/<relay domain>
+
+In our example, this would be
+
+    http://try.yaler.net/gsiot-ffmq-ttd5
+
 
 Otherwise, start YalerTunnel in client mode
 
-    java YalerTunnel client localhost:10022 yaler.net:80 my-device-ssh
+    java YalerTunnel client localhost:10022 try.yaler.net:80 <relay domain>
+
+In our example, this would be
+
+    java YalerTunnel client localhost:10022 try.yaler.net:80 gsiot-ffmq-ttd5
 
 and connect the SSH client to localhost:10022.
 
 
-LICENSE: Yaler and YalerTunnel are released under the Sleepycat license with the
-additional clause "FOR NON-COMMERCIAL PURPOSES".
-
 Thanks, and please join us at http://yaler.org/
 
-Cuno (pfister@oberon.ch), Marc (frei@oberon.ch), Thomas (amberg@oberon.ch)
+Marc (frei@yaler.net), Thomas (tamberg@yaler.net)
