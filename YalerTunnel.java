@@ -1,4 +1,4 @@
-// Copyright (c) 2011, Yaler GmbH, Switzerland
+// Copyright (c) 2015, Yaler GmbH, Switzerland
 // All rights reserved
 
 import java.net.InetSocketAddress;
@@ -230,7 +230,12 @@ class YalerTunnel {
 
 	static void beginRelaying (SelectionKey k) {
 		SelectionKey p = peer(k);
-		include(k, SelectionKey.OP_READ);
+		if (buffer(k).position() == 0) {
+			include(k, SelectionKey.OP_READ);
+		} else {
+			buffer(k).flip();
+			include(p, SelectionKey.OP_WRITE);
+		}
 		if (buffer(p).position() == 0) {
 			include(p, SelectionKey.OP_READ);
 		} else {
@@ -360,8 +365,11 @@ class YalerTunnel {
 					handleRedirect(k);
 				} else {
 					if (mode == CLIENT) {
-						if (startsWith(b, 0, i, HTTP200) && (i == b.position())) {
-							b.clear();
+						if (startsWith(b, 0, i, HTTP200)) {
+							exclude(k, SelectionKey.OP_READ);
+							b.limit(b.position());
+							b.position(i);
+							b.compact();
 							beginRelaying(k);
 						} else {
 							handleError(k, UNEXPECTED_PROXY_RESPONSE);
@@ -470,7 +478,7 @@ class YalerTunnel {
 
 	public static void main (String[] args) {
 		if (args.length == 0) {
-			System.err.print("YalerTunnel 1.1\n"
+			System.err.print("YalerTunnel 1.1.1\n"
 				+ "Usage: YalerTunnel (c | s | p) <local host>:<port> "
 				+ "<yaler host>:<port> <yaler domain> [-capacity <capacity>]\n");
 		} else {
